@@ -1,3 +1,7 @@
+# Copyright BigchainDB GmbH and BigchainDB contributors
+# SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+# Code is Apache-2.0 and docs are CC-BY-4.0
+
 """This module is tests related to schema checking, but _not_ of granular schematic
 properties related to validation.
 """
@@ -21,6 +25,7 @@ UNSUPPORTED_CRYPTOCONDITION_TYPES = (
 
 ################################################################################
 # Test of schema utils
+
 
 def _test_additionalproperties(node, path=''):
     """Validate that each object node has additionalProperties set, so that

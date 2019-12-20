@@ -1,4 +1,12 @@
+# Copyright BigchainDB GmbH and BigchainDB contributors
+# SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+# Code is Apache-2.0 and docs are CC-BY-4.0
+
 import re
+
+from bigchaindb.common.transaction_mode_types import (BROADCAST_TX_COMMIT,
+                                                      BROADCAST_TX_ASYNC,
+                                                      BROADCAST_TX_SYNC)
 
 
 def valid_txid(txid):
@@ -34,9 +42,9 @@ def valid_operation(op):
 
 def valid_mode(mode):
     if mode == 'async':
-        return 'broadcast_tx_async'
+        return BROADCAST_TX_ASYNC
     if mode == 'sync':
-        return 'broadcast_tx_sync'
+        return BROADCAST_TX_SYNC
     if mode == 'commit':
-        return 'broadcast_tx_commit'
+        return BROADCAST_TX_COMMIT
     raise ValueError('Mode must be "async", "sync" or "commit"')

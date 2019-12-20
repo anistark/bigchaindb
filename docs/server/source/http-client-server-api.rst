@@ -1,3 +1,8 @@
+
+.. Copyright BigchainDB GmbH and BigchainDB contributors
+   SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+   Code is Apache-2.0 and docs are CC-BY-4.0
+
 .. _the-http-client-server-api:
 
 The HTTP Client-Server API
@@ -46,6 +51,15 @@ that allows you to discover the BigchainDB API endpoints:
 Transactions
 ------------
 
+.. note::
+
+   If you want to do more sophisticated queries
+   than those provided by the BigchainDB HTTP API,
+   then one option is to connect to MongoDB directly (if possible)
+   and do whatever queries MongoDB allows.
+   For more about that option, see
+   `the page about querying BigchainDB <https://docs.bigchaindb.com/en/latest/query.html>`_.
+
 .. http:get:: /api/v1/transactions/{transaction_id}
 
    Get the transaction with the ID ``transaction_id``.
@@ -77,7 +91,7 @@ Transactions
    Requests to the ``/api/v1/transactions`` endpoint
    without any query parameters will get a response status code ``400 Bad Request``.
 
-.. http:get:: /api/v1/transactions?asset_id={asset_id}&operation={CREATE|TRANSFER}
+.. http:get:: /api/v1/transactions?asset_id={asset_id}&operation={CREATE|TRANSFER}&last_tx={true|false}
 
    Get a list of transactions that use an asset with the ID ``asset_id``.
 
@@ -92,11 +106,17 @@ Transactions
    If ``operation`` is not included, then *every* transaction involving
    the asset with ID ``asset_id`` will be returned.
 
+   if ``last_tx`` is set to ``true``, only the last transaction is returned
+   instead of all transactions with the given ``asset_id``.
+
    This endpoint returns transactions only if they are in committed blocks.
 
    :query string operation: (Optional) ``CREATE`` or ``TRANSFER``.
 
    :query string asset_id: asset ID.
+
+   :query string last_tx: (Optional) ``true`` or ``false``.
+
 
    **Example request**:
 
@@ -121,18 +141,34 @@ Transactions
 
    :query string mode: (Optional) One of the three supported modes to send a transaction: ``async``, ``sync``, ``commit``. The default is ``async``.
 
-   The ``mode`` query parameter inhereted from the mode parameter in Tendermint's
-   `broadcast API
-   <http://tendermint.readthedocs.io/projects/tools/en/master/using-tendermint.html#broadcast-api>`_.
-   ``mode=async`` means the HTTP response will come back immediately, without
-   even checking to see if the transaction is valid.
-   ``mode=sync`` means the HTTP response will come back once the node has
-   checked the validity of the transaction.
+   Once the posted transaction arrives at a BigchainDB node,
+   that node will check to see if the transaction is valid.
+   If it's invalid, the node will return an HTTP 400 (error).
+   Otherwise, the node will send the transaction to Tendermint (in the same node) using the
+   `Tendermint broadcast API
+   <https://tendermint.com/docs/tendermint-core/using-tendermint.html#broadcast-api>`_.
+
+   The meaning of the ``mode`` query parameter is inherited from the mode parameter in
+   `Tendermint's broadcast API
+   <https://tendermint.com/docs/tendermint-core/using-tendermint.html#broadcast-api>`_.
+   ``mode=async`` means the HTTP response will come back immediately,
+   before Tendermint asks BigchainDB Server to check the validity of the transaction (a second time).
+   ``mode=sync`` means the HTTP response will come back
+   after Tendermint gets a response from BigchainDB Server
+   regarding the validity of the transaction.
    ``mode=commit`` means the HTTP response will come back once the transaction
    is in a committed block.
 
    .. note::
-   
+       In the async and sync modes, after a successful HTTP response is returned, the transaction may still be rejected later on. All the transactions are recorded internally by Tendermint in WAL (Write-Ahead Log) before the HTTP response is returned. Nevertheless, the following should be noted:
+
+       - Transactions in WAL including the failed ones are not exposed in any of the BigchainDB or Tendermint APIs.
+       - Transactions are never fetched from WAL. WAL is never replayed.
+       - A critical failure (e.g. the system is out of disk space) may occur preventing transactions from being stored in WAL, even when the HTTP response indicates a success.
+       - If a transaction fails the validation because it conflicts with the other transactions of the same block, Tendermint includes it into its block, but BigchainDB does not store these transactions and does not offer any information about them in the APIs.
+
+   .. note::
+
        The posted transaction should be valid.
        The relevant
        `BigchainDB Transactions Spec <https://github.com/bigchaindb/BEPs/tree/master/tx-specs/>`_
@@ -161,7 +197,7 @@ Transactions
    :resheader Content-Type: ``application/json``
 
    :statuscode 202: The meaning of this response depends on the value
-                    of the ``mode`` parameter. See above. 
+                    of the ``mode`` parameter. See above.
 
    :statuscode 400: The posted transaction was invalid.
 
@@ -179,6 +215,14 @@ The ``/api/v1/outputs`` endpoint returns transactions outputs filtered by a
 given public key, and optionally filtered to only include either spent or
 unspent outputs.
 
+.. note::
+
+   If you want to do more sophisticated queries
+   than those provided by the BigchainDB HTTP API,
+   then one option is to connect to MongoDB directly (if possible)
+   and do whatever queries MongoDB allows.
+   For more about that option, see
+   `the page about querying BigchainDB <https://docs.bigchaindb.com/en/latest/query.html>`_.
 
 .. http:get:: /api/v1/outputs
 
@@ -289,6 +333,15 @@ unspent outputs.
 Assets
 ------
 
+.. note::
+
+   If you want to do more sophisticated queries
+   than those provided by the BigchainDB HTTP API,
+   then one option is to connect to MongoDB directly (if possible)
+   and do whatever queries MongoDB allows.
+   For more about that option, see
+   `the page about querying BigchainDB <https://docs.bigchaindb.com/en/latest/query.html>`_.
+
 .. http:get:: /api/v1/assets
 
    Return all the assets that match a given text search.
@@ -297,18 +350,18 @@ Assets
    :query int limit: (Optional) Limit the number of returned assets. Defaults
                      to ``0`` meaning return all matching assets.
 
-   .. note::
-
-        Currently this endpoint is only supported if using MongoDB.
-
-.. http:get:: /api/v1/assets?search={search}
+.. http:get:: /api/v1/assets/?search={search}
 
     Return all assets that match a given text search.
-    
+
     .. note::
-    
+
        The ``id`` of the asset
        is the same ``id`` of the CREATE transaction that created the asset.
+
+    .. note::
+
+       You can use ``assets/?search`` or ``assets?search``.
 
     If no assets match the text search it returns an empty list.
 
@@ -404,6 +457,15 @@ Assets
 Transaction Metadata
 --------------------
 
+.. note::
+
+   If you want to do more sophisticated queries
+   than those provided by the BigchainDB HTTP API,
+   then one option is to connect to MongoDB directly (if possible)
+   and do whatever queries MongoDB allows.
+   For more about that option, see
+   `the page about querying BigchainDB <https://docs.bigchaindb.com/en/latest/query.html>`_.
+
 .. http:get:: /api/v1/metadata
 
    Return all the metadata objects that match a given text search.
@@ -412,18 +474,18 @@ Transaction Metadata
    :query int limit: (Optional) Limit the number of returned metadata objects. Defaults
                      to ``0`` meaning return all matching objects.
 
-   .. note::
-
-        Currently this endpoint is only supported if using MongoDB.
-
 .. http:get:: /api/v1/metadata/?search={search}
 
     Return all metadata objects that match a given text search.
-    
+
     .. note::
 
        The ``id`` of the metadata
        is the same ``id`` of the transaction where it was defined.
+
+    .. note::
+
+       You can use ``metadata/?search`` or ``metadata?search``.
 
     If no metadata objects match the text search it returns an empty list.
 
@@ -560,14 +622,8 @@ Validators
    :statuscode 200: The query was executed successfully and validators set was returned.
 
 
-Advanced Usage
---------------------------------
-
-The following endpoints are more advanced
-and meant for debugging and transparency purposes.
-
 Blocks
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------
 
 .. http:get:: /api/v1/blocks/{block_height}
 

@@ -1,3 +1,7 @@
+# Copyright BigchainDB GmbH and BigchainDB contributors
+# SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+# Code is Apache-2.0 and docs are CC-BY-4.0
+
 """All tests of transaction structure. The concern here is that transaction
 structural / schematic issues are caught when reading a transaction
 (ie going from dict -> transaction).
@@ -5,15 +9,16 @@ structural / schematic issues are caught when reading a transaction
 import json
 
 import pytest
-import sha3
+try:
+    import hashlib as sha3
+except ImportError:
+    import sha3
 from unittest.mock import MagicMock
 
 from bigchaindb.common.exceptions import (AmountError,
                                           SchemaValidationError,
                                           ThresholdTooDeep)
 from bigchaindb.models import Transaction
-
-pytestmark = pytest.mark.tendermint
 
 ################################################################################
 # Helper functions

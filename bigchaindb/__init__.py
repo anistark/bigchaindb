@@ -1,7 +1,15 @@
+# Copyright BigchainDB GmbH and BigchainDB contributors
+# SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+# Code is Apache-2.0 and docs are CC-BY-4.0
+
 import copy
 import logging
 
 from bigchaindb.log import DEFAULT_LOGGING_CONFIG as log_config
+from bigchaindb.lib import BigchainDB  # noqa
+from bigchaindb.migrations.chain_migration_election import ChainMigrationElection
+from bigchaindb.version import __version__  # noqa
+from bigchaindb.core import App  # noqa
 
 # from functools import reduce
 # PORT_NUMBER = reduce(lambda x, y: x * y, map(ord, 'BigchainDB')) % 2**16
@@ -59,6 +67,10 @@ config = {
         'advertised_host': 'localhost',
         'advertised_port': 9985,
     },
+    'tendermint': {
+        'host': 'localhost',
+        'port': 26657,
+    },
     # FIXME: hardcoding to localmongodb for now
     'database': _database_map['localmongodb'],
     'log': {
@@ -80,5 +92,13 @@ config = {
 # the user wants to reconfigure the node. Check ``bigchaindb.config_utils``
 # for more info.
 _config = copy.deepcopy(config)
-from bigchaindb.core import Bigchain  # noqa
-from bigchaindb.version import __version__  # noqa
+from bigchaindb.common.transaction import Transaction  # noqa
+from bigchaindb import models                          # noqa
+from bigchaindb.upsert_validator import ValidatorElection  # noqa
+from bigchaindb.elections.vote import Vote  # noqa
+
+Transaction.register_type(Transaction.CREATE, models.Transaction)
+Transaction.register_type(Transaction.TRANSFER, models.Transaction)
+Transaction.register_type(ValidatorElection.OPERATION, ValidatorElection)
+Transaction.register_type(ChainMigrationElection.OPERATION, ChainMigrationElection)
+Transaction.register_type(Vote.OPERATION, Vote)

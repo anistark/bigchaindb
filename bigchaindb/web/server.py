@@ -1,3 +1,7 @@
+# Copyright BigchainDB GmbH and BigchainDB contributors
+# SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+# Code is Apache-2.0 and docs are CC-BY-4.0
+
 """This module contains basic functions to instantiate the BigchainDB API.
 
 The application is implemented in Flask and runs using Gunicorn.
@@ -11,7 +15,7 @@ from flask_cors import CORS
 import gunicorn.app.base
 
 from bigchaindb import utils
-from bigchaindb import Bigchain
+from bigchaindb import BigchainDB
 from bigchaindb.web.routes import add_routes
 from bigchaindb.web.strip_content_type_middleware import StripContentTypeMiddleware
 
@@ -67,7 +71,7 @@ def create_app(*, debug=False, threads=1, bigchaindb_factory=None):
     """
 
     if not bigchaindb_factory:
-        bigchaindb_factory = Bigchain
+        bigchaindb_factory = BigchainDB
 
     app = Flask(__name__)
     app.wsgi_app = StripContentTypeMiddleware(app.wsgi_app)

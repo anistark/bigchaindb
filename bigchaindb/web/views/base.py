@@ -1,3 +1,7 @@
+# Copyright BigchainDB GmbH and BigchainDB contributors
+# SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+# Code is Apache-2.0 and docs are CC-BY-4.0
+
 """Common classes and methods for API handlers
 """
 import logging
@@ -32,7 +36,10 @@ def base_ws_uri():
     customized (typically when running behind NAT, firewall, etc.)
     """
 
-    scheme = config['wsserver']['advertised_scheme']
-    host = config['wsserver']['advertised_host']
-    port = config['wsserver']['advertised_port']
+    config_wsserver = config['wsserver']
+
+    scheme = config_wsserver['advertised_scheme']
+    host = config_wsserver['advertised_host']
+    port = config_wsserver['advertised_port']
+
     return '{}://{}:{}'.format(scheme, host, port)

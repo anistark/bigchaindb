@@ -1,10 +1,10 @@
-FROM tendermint/tendermint:0.19.9
-LABEL maintainer "dev@bigchaindb.com"
+FROM tendermint/tendermint:v0.31.5
+LABEL maintainer "devs@bigchaindb.com"
 WORKDIR /
 USER root
 RUN apk --update add bash
 COPY genesis.json.template /etc/tendermint/genesis.json
 COPY tendermint_entrypoint.bash /
 VOLUME /tendermint /tendermint_node_data
-EXPOSE 46656 46657
+EXPOSE 26656 26657
 ENTRYPOINT ["/tendermint_entrypoint.bash"]

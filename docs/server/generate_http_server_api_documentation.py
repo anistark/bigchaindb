@@ -1,3 +1,7 @@
+# Copyright BigchainDB GmbH and BigchainDB contributors
+# SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+# Code is Apache-2.0 and docs are CC-BY-4.0
+
 """ Script to build http examples for http server api docs """
 
 import json
@@ -5,9 +9,7 @@ import os
 import os.path
 
 from bigchaindb.common.transaction import Transaction, Input, TransactionLink
-from bigchaindb.core import Bigchain
-from bigchaindb.models import Block
-from bigchaindb.tendermint import lib
+from bigchaindb import lib
 from bigchaindb.web import server
 
 

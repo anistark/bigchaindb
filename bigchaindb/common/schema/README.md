@@ -1,3 +1,9 @@
+<!---
+Copyright BigchainDB GmbH and BigchainDB contributors
+SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+Code is Apache-2.0 and docs are CC-BY-4.0
+--->
+
 # Introduction
 
 This directory contains the schemas for the different JSON documents BigchainDB uses.
@@ -13,9 +19,9 @@ The aim is to provide:
 ## Sources
 
 The files defining the JSON Schema for transactions (`transaction_*.yaml`)
-are based on the [IPDB Transaction Spec](https://github.com/ipdb/ipdb-tx-spec).
+are based on the [BigchainDB Transactions Specs](https://github.com/bigchaindb/BEPs/tree/master/tx-specs).
 If you want to add a new transaction version,
-you must add it to the IPDB Transaction Spec first.
+you must write a spec for it first.
 (You can't change the JSON Schema files for old versions.
 Those were used to validate old transactions
 and are needed to re-check those transactions.)

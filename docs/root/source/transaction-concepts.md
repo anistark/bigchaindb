@@ -1,3 +1,9 @@
+<!---
+Copyright BigchainDB GmbH and BigchainDB contributors
+SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+Code is Apache-2.0 and docs are CC-BY-4.0
+--->
+
 # Transaction Concepts
 
 In BigchainDB, _transactions_ are used to register, issue, create or transfer
@@ -27,9 +33,8 @@ and the other output might have 15 oak trees for another set of owners.
 
 Each output also has an associated condition: the condition that must be met
 (by a TRANSFER transaction) to transfer/spend the output.
-BigchainDB supports a variety of conditions,
-a subset of the [Interledger Protocol (ILP)](https://interledger.org/)
-crypto-conditions. For details, see
+BigchainDB supports a variety of conditions.
+For details, see
 the section titled **Transaction Components: Conditions**
 in the relevant
 [BigchainDB Transactions Spec](https://github.com/bigchaindb/BEPs/tree/master/tx-specs/).
